@@ -320,7 +320,7 @@ NTSTATUS OpenIOTarget(PDEVICE_EXTENSION ctx, LARGE_INTEGER res, ACCESS_MASK use,
 	UNICODE_STRING ReadString;
 	WCHAR ReadStringBuffer[260];
 
-	Trace(TRACE_LEVEL_INFORMATION, TRACE_DRIVER, "OpenIOTarget Entry");
+	Trace(TRACE_LEVEL_INFORMATION, TRACE_FLAG_DRIVER, "OpenIOTarget Entry");
 
 	RtlInitEmptyUnicodeString(&ReadString,
 		ReadStringBuffer,
@@ -330,7 +330,7 @@ NTSTATUS OpenIOTarget(PDEVICE_EXTENSION ctx, LARGE_INTEGER res, ACCESS_MASK use,
 		res.LowPart,
 		res.HighPart);
 	if (!NT_SUCCESS(status)) {
-		Trace(TRACE_LEVEL_INFORMATION, TRACE_DRIVER, "RESOURCE_HUB_CREATE_PATH_FROM_ID failed 0x%x", status);
+		Trace(TRACE_LEVEL_INFORMATION, TRACE_FLAG_DRIVER, "RESOURCE_HUB_CREATE_PATH_FROM_ID failed 0x%x", status);
 		goto Exit;
 	}
 
@@ -339,19 +339,19 @@ NTSTATUS OpenIOTarget(PDEVICE_EXTENSION ctx, LARGE_INTEGER res, ACCESS_MASK use,
 
 	status = WdfIoTargetCreate(ctx->FxDevice, &ObjectAttributes, target);
 	if (!NT_SUCCESS(status)) {
-		Trace(TRACE_LEVEL_INFORMATION, TRACE_DRIVER, "WdfIoTargetCreate failed 0x%x", status);
+		Trace(TRACE_LEVEL_INFORMATION, TRACE_FLAG_DRIVER, "WdfIoTargetCreate failed 0x%x", status);
 		goto Exit;
 	}
 
 	WDF_IO_TARGET_OPEN_PARAMS_INIT_OPEN_BY_NAME(&OpenParams, &ReadString, use);
 	status = WdfIoTargetOpen(*target, &OpenParams);
 	if (!NT_SUCCESS(status)) {
-		Trace(TRACE_LEVEL_INFORMATION, TRACE_DRIVER, "WdfIoTargetOpen failed 0x%x", status);
+		Trace(TRACE_LEVEL_INFORMATION, TRACE_FLAG_DRIVER, "WdfIoTargetOpen failed 0x%x", status);
 		goto Exit;
 	}
 
 Exit:
-	Trace(TRACE_LEVEL_INFORMATION, TRACE_DRIVER, "OpenIOTarget Exit");
+	Trace(TRACE_LEVEL_INFORMATION, TRACE_FLAG_DRIVER, "OpenIOTarget Exit");
 	return status;
 }
 
@@ -445,33 +445,33 @@ OnPrepareHardware(
 	{
 		status = OpenIOTarget(devContext, devContext->ResetGpioId, GENERIC_READ | GENERIC_WRITE, &devContext->ResetGpio);
 		if (!NT_SUCCESS(status)) {
-			Trace(TRACE_LEVEL_ERROR, TRACE_DRIVER, "OpenIOTarget failed for Reset GPIO 0x%x", status);
+			Trace(TRACE_LEVEL_ERROR, TRACE_FLAG_INIT, "OpenIOTarget failed for Reset GPIO 0x%x", status);
 			goto exit;
 		}
 
-		Trace(TRACE_LEVEL_INFORMATION, TRACE_DRIVER, "Starting bring up sequence for the controller");
+		Trace(TRACE_LEVEL_INFORMATION, TRACE_FLAG_INIT, "Starting bring up sequence for the controller");
 
-		Trace(TRACE_LEVEL_INFORMATION, TRACE_DRIVER, "Setting reset gpio pin to low");
+		Trace(TRACE_LEVEL_INFORMATION, TRACE_FLAG_INIT, "Setting reset gpio pin to low");
 
 		value = 0;
 		SetGPIO(devContext->ResetGpio, &value);
 
-		Trace(TRACE_LEVEL_INFORMATION, TRACE_DRIVER, "Waiting...");
+		Trace(TRACE_LEVEL_INFORMATION, TRACE_FLAG_INIT, "Waiting...");
 
 		delay.QuadPart = -10 * TOUCH_POWER_RAIL_STABLE_TIME;
 		KeDelayExecutionThread(KernelMode, TRUE, &delay);
 
-		Trace(TRACE_LEVEL_INFORMATION, TRACE_DRIVER, "Setting reset gpio pin to high");
+		Trace(TRACE_LEVEL_INFORMATION, TRACE_FLAG_INIT, "Setting reset gpio pin to high");
 
 		value = 1;
 		SetGPIO(devContext->ResetGpio, &value);
 
-		Trace(TRACE_LEVEL_INFORMATION, TRACE_DRIVER, "Waiting...");
+		Trace(TRACE_LEVEL_INFORMATION, TRACE_FLAG_INIT, "Waiting...");
 
 		delay.QuadPart = -10 * TOUCH_DELAY_TO_COMMUNICATE;
 		KeDelayExecutionThread(KernelMode, TRUE, &delay);
 
-		Trace(TRACE_LEVEL_INFORMATION, TRACE_DRIVER, "Done");
+		Trace(TRACE_LEVEL_INFORMATION, TRACE_FLAG_INIT, "Done");
 	}
 
 	//

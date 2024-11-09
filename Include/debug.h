@@ -1,7 +1,7 @@
 #include <wdm.h>
 
 #define Trace(Level, Flags, Msg, ...) \
-			DbgPrintEx(DPFLTR_IHVDRIVER_ID, DPFLTR_ERROR_LEVEL, "ST: " Msg "\n", __VA_ARGS__);
+			DbgPrintEx(DPFLTR_IHVDRIVER_ID, DPFLTR_ERROR_LEVEL, "ST: %s (%i) " Msg "\n", Level, Flags, __VA_ARGS__);
 
 //#define COORDS_DEBUG
 //#define ALS_BACKLIGHT_DEBUG
@@ -19,15 +19,11 @@ typedef enum _TraceFlags
     TRACE_FLAG_INTERRUPT,
     TRACE_FLAG_SAMPLES,
     TRACE_FLAG_OTHER,
-    TRACE_FLAG_IDLE
+    TRACE_FLAG_IDLE,
+    TRACE_FLAG_DRIVER
 } TraceFlag;
 
-typedef enum _TraceLevels
-{
-    TRACE_LEVEL_ERROR = 1,
-    TRACE_LEVEL_VERBOSE,
-    TRACE_LEVEL_INFORMATION,
-    TRACE_LEVEL_WARNING
-} TraceLevel;
-
-
+#define TRACE_LEVEL_ERROR "ERROR"
+#define TRACE_LEVEL_VERBOSE "VERBOSE"
+#define TRACE_LEVEL_INFORMATION "INFO"
+#define TRACE_LEVEL_WARNING "WARN"

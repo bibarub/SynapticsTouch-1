@@ -63,7 +63,7 @@ GetTouchesFromF12(
 	{
 		Trace(
 			TRACE_LEVEL_ERROR,
-			TRACE_INTERRUPT,
+			TRACE_FLAG_INTERRUPT,
 			"Error reading finger status data - Status=%X",
 			status);
 
@@ -74,7 +74,7 @@ GetTouchesFromF12(
 	{
 		Trace(
 			TRACE_LEVEL_ERROR,
-			TRACE_INTERRUPT,
+			TRACE_FLAG_INTERRUPT,
 			"Error reading finger status data - empty buffer"
 		);
 
