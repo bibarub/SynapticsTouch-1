@@ -416,6 +416,13 @@ OnPrepareHardware(
 				devContext->I2CContext.I2cResHubId.HighPart =
 					res->u.Connection.IdHighPart;
 
+				Trace(
+					TRACE_LEVEL_VERBOSE,
+					TRACE_FLAG_INIT,
+					"Found an I2C bus with ID %I64i",
+					devContext->I2CContext.I2cResHubId.QuadPart
+				);
+
 				status = STATUS_SUCCESS;
 			}
 			else if (!devContext->HasResetGpio &&
@@ -426,6 +433,13 @@ OnPrepareHardware(
 					res->u.Connection.IdLowPart;
 				devContext->ResetGpioId.HighPart = 
 					res->u.Connection.IdHighPart;
+
+				Trace(
+					TRACE_LEVEL_VERBOSE,
+					TRACE_FLAG_INIT,
+					"Found a GPIO Reset pin with ID %I64i",
+					devContext->ResetGpioId.QuadPart
+				);
 
 				devContext->HasResetGpio = TRUE;
 			}
