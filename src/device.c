@@ -405,28 +405,30 @@ OnPrepareHardware(
 	{
 		res = WdfCmResourceListGetDescriptor(FxResourcesTranslated, i);
 
-		if (res->Type == CmResourceTypeConnection &&
-			res->u.Connection.Class == CM_RESOURCE_CONNECTION_CLASS_SERIAL &&
-			res->u.Connection.Type == CM_RESOURCE_CONNECTION_TYPE_SERIAL_I2C)
+		if (res->Type == CmResourceTypeConnection)
 		{
-			devContext->I2CContext.I2cResHubId.LowPart =
-				res->u.Connection.IdLowPart;
-			devContext->I2CContext.I2cResHubId.HighPart =
-				res->u.Connection.IdHighPart;
+			if (!NT_SUCCESS(status) &&
+				res->u.Connection.Class == CM_RESOURCE_CONNECTION_CLASS_SERIAL &&
+				res->u.Connection.Type == CM_RESOURCE_CONNECTION_TYPE_SERIAL_I2C)
+			{
+				devContext->I2CContext.I2cResHubId.LowPart =
+					res->u.Connection.IdLowPart;
+				devContext->I2CContext.I2cResHubId.HighPart =
+					res->u.Connection.IdHighPart;
 
-			status = STATUS_SUCCESS;
-		}
+				status = STATUS_SUCCESS;
+			}
+			else if (!devContext->HasResetGpio &&
+				res->u.Connection.Class == CM_RESOURCE_CONNECTION_CLASS_GPIO &&
+				res->u.Connection.Type == CM_RESOURCE_CONNECTION_TYPE_GPIO_IO)
+			{
+				devContext->ResetGpioId.LowPart = 
+					res->u.Connection.IdLowPart;
+				devContext->ResetGpioId.HighPart = 
+					res->u.Connection.IdHighPart;
 
-		if (res->Type == CmResourceTypeConnection &&
-			res->u.Connection.Class == CM_RESOURCE_CONNECTION_CLASS_GPIO &&
-			res->u.Connection.Type == CM_RESOURCE_CONNECTION_TYPE_GPIO_IO)
-		{
-			devContext->ResetGpioId.LowPart = 
-				res->u.Connection.IdLowPart;
-			devContext->ResetGpioId.HighPart = 
-				res->u.Connection.IdHighPart;
-
-			devContext->HasResetGpio = TRUE;
+				devContext->HasResetGpio = TRUE;
+			}
 		}
 	}
 
